@@ -1,0 +1,45 @@
+#
+# Run Minecraft Server & Jupyter notebooks in a container using Docker Compose
+#
+# Start container:
+# docker-compose up -d
+#
+# Open http://localhost:8888/ in browser and run the samples
+#
+# Stop the container:
+# docker-compose stop
+#
+# Stop and remove container, network, etc.:
+# docker-compose down
+#
+
+version: '2'
+services:
+  minecraft:
+    image: itzg/minecraft-bedrock-server
+    container_name: minecraft
+    environment:
+      EULA: "TRUE"
+      GAMEMODE: creative
+      DIFFICULTY: easy
+    ports:
+      - "19132:19132/udp"
+      - "25565:25565/udp"
+    volumes: 
+      - bedrock:/data
+  jupyter:
+    image: jupyter/datascience-notebook
+    container_name: jupyter
+    environment:
+      JUPYTER_ENABLE_LAB: 1
+      GRANT_SUDO: 1
+    volumes:
+      - ./notebooks:/home/jovyan/work
+    ports:
+      - "8888:8888"
+    user: root
+    entrypoint:
+      - start-notebook.sh
+      - --NotebookApp.token=''
+volumes:
+  bedrock:
